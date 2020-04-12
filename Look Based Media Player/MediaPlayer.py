@@ -22,6 +22,7 @@ class Window(QWidget):
         # Creating Video Widget Object........
         videoWidget = QVideoWidget()
         faceDetetction = QPushButton("Face Detection")
+        faceDetetction.clicked.connect(self.faceDetect)
         openBtn = QPushButton("Open video")  # Creating open Button...
         openBtn.clicked.connect(self.openFile)
         self.playBtn = QPushButton()
@@ -38,7 +39,6 @@ class Window(QWidget):
         # Creating hbox Layouts......
         hBoxLayout = QHBoxLayout()
         hBoxLayout.setContentsMargins(0, 0, 0, 0)
-
         hBoxLayout.addWidget(self.playBtn)
         hBoxLayout.addWidget(self.slider)
         # Creating Vbox layout.......
@@ -59,6 +59,11 @@ class Window(QWidget):
             self.mediaPlayer.setMedia(QMediaContent(QUrl.fromLocalFile(filename)))
             self.playBtn.setEnabled(True)
     def playVideo(self):
+        if self.mediaPlayer.state() == self.mediaPlayer.PlayingState:
+            self.mediaPlayer.pause()
+        else:
+            self.mediaPlayer.play()
+    def faceDetect(self):
         face_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
         capture = cv2.VideoCapture(0)
         while (True):
@@ -93,9 +98,6 @@ class Window(QWidget):
         self.slider.setRange(0, duration)
     def setPosition(self, position):
         self.mediaPlayer.setPosition(position)
-    def handle_errors(self):
-        self.playBtn.setEnabled(False)
-        self.label.setText("Errors - " + self.mediaPlayer.errorString())
 app = QApplication(sys.argv)
 window = Window()
 sys.exit(app.exec_())
